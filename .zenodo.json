@@ -1,0 +1,36 @@
+{
+  "title": "The complexity of strongly stable source tripartition existence",
+  "upload_type": "software",
+  "publication_date": "2026-11-27",
+  "version": "1.0.0",
+  "creators": [
+    {
+      "name": "DannyExperiments"
+    }
+  ],
+  "keywords": [
+    "belief merging",
+    "source reliability",
+    "strongly stable tripartition",
+    "maximal consistent subsets",
+    "propositional logic",
+    "polynomial hierarchy",
+    "quantified Boolean formulas"
+  ],
+  "description": "<p>This note answers the existence complexity question in Section 8.6 of Paolo Liberatore's 2018 article Belief Integration and Source Reliability Assessment. For finite explicitly represented propositional sources, deciding whether there is a strongly stable three-level source ranking is Sigma-3-P-complete under polynomial-time many-one reductions. Hardness holds for pairwise disjoint sources of at most three individually satisfiable formulas and for rankings with three nonempty classes.</p><p>An undominated valuation truth set is exactly a maximal consistent subset in every priority prefix. For membership in Sigma-3-P, guess a ranking and require a dominating valuation for each valuation that would induce a different ranking. The hardness reduction starts from three-block quantified satisfiability. The first priority class pins the existential choice. A Bad truth set for a universal assignment is strictly dominated in the middle block exactly when a Repair witness exists. A Good mode rules out the competing ranking and survives every challenge.</p><p>The classification covers existence with strong stability. Joint consistency of each entire source and restrictions to particular propositional languages are outside the claim. The companion skeptical-consequence study uses the same base reduction and separate inference arguments. Its version DOI is 10.5281/zenodo.24572374.</p><p>The deposit provides the manuscript, LaTeX source, bibliography, citation metadata, evidence archive and repository checksums. The exact replay checks the ranking criterion on finite instances. The worked offline explorer lets readers change the bits in a concrete quantified example and inspect which truth-set modes survive. The mathematics was reviewed internally. External peer review and formal verification are pending.</p><p>ChatGPT Astra 6.2 (OpenAI) generated the recovered proof and its original replay under human direction. OpenAI Codex independently reviewed the mathematics and prepared the release replay. GPT-6.2 Sol (OpenAI) checked primary sources and prepared the manuscript and illustration. DannyExperiments is the project citation identity.</p>",
+  "access_right": "open",
+  "license": "other-closed",
+  "notes": "All rights reserved. Publicly downloadable files are supplied without a repository-wide reuse license.",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DannyExperiments/strongly-stable-tripartition-existence/releases/tag/v1.0.0",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "10.5281/zenodo.24572374",
+      "relation": "references",
+      "resource_type": "software"
+    }
+  ]
+}

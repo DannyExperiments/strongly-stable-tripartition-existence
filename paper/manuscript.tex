@@ -1,0 +1,104 @@
+\documentclass[11pt,a4paper]{amsart}
+\usepackage[hmargin=.83in,vmargin=.70in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={The complexity of strongly stable source tripartition existence}}
+\urlstyle{same}
+\setlength{\emergencystretch}{2em}
+\linespread{0.96}
+\DeclareMathSizes{8}{8}{8}{8}
+\DeclareMathSizes{9}{9}{8}{8}
+\DeclareMathSizes{10.95}{10.95}{8}{8}
+\renewcommand{\bibliofont}{\normalsize\raggedright}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\Good}{\mathrm{Good}}
+\newcommand{\Bad}{\mathrm{Bad}}
+\newcommand{\Repair}{\mathrm{Repair}}
+\newcommand{\mode}{\mathrm{mode}}
+\title[Strongly stable source tripartition existence]{The complexity of strongly stable source tripartition existence}
+\date{}
+\begin{document}
+\begin{abstract}
+We show that deciding whether explicitly represented propositional sources admit a strongly stable tripartition is $\Sigma_3^P$-complete under polynomial-time many-one reductions. This answers Liberatore's existence question in Section 8.6 of \emph{Belief Integration and Source Reliability Assessment}. In the reduction, the first source class pins an existential assignment, and each universal assignment leaves a destabilizing maximal set precisely when it lacks a repair witness. Hardness holds for pairwise disjoint sources of at most three formulas, all individually satisfiable.
+\end{abstract}
+\maketitle
+
+\section{Problem and model}
+A source is a nonempty finite set of explicitly represented propositional formulas. For a tripartition $T=(R\mid P\mid U)$ of the sources, flatten the three source classes to formula blocks, taking unions within each class. A $T$-\emph{maxcon} is a consistent subset $M$ of the full formula union whose intersection with each priority prefix is inclusion-maximal consistent in that prefix. This is the prefix rule familiar from preferred subtheories \cite{brewka}. If the same formula appears at multiple priorities, we may compare it in its earliest block, since this leaves each formula prefix unchanged. Original source memberships are retained when inducing a tripartition.
+
+Following Liberatore \cite[Definitions~1--4 and 11]{liberatore}, $M$ induces the ranking that places a source in $R$, $P$ or $U$ when all, some but fewer than all, or none of its formulas are individually consistent with $M$. A tripartition is \emph{strongly stable} if every one of its maxcons induces it. The target is the existence question in \cite[\S8.6, p.~137]{liberatore}. The two-class existence theorem and three-class nonexistence examples are already known \cite[Theorems~8 and 17]{liberatore}. Earlier complexity for a supplied stratification concerns an inference task with the ranking given as input \cite[Proposition~6]{coste}.
+
+\begin{theorem}\label{thm:main}
+Existence of a strongly stable propositional source tripartition is $\Sigma_3^P$-complete under polynomial-time many-one reductions. Hardness holds for pairwise disjoint sources of at most three formulas, with each formula individually satisfiable. It also holds if the three source classes are required to be nonempty.
+\end{theorem}
+
+\section{Maxcons and the upper bound}
+For a valuation $v$ write $A(v)$ for the truth set of the input formulas it satisfies. Compare two truth sets by their restrictions to the disjoint blocks defined above. At the earliest block where they differ, the one strictly containing the other in that block dominates it. If those block restrictions are incomparable, neither truth set dominates the other. Equal restrictions in all blocks give a tie.
+
+\begin{lemma}\label{lem:truth}
+The $T$-maxcons are exactly the undominated truth sets under this comparison. A maxcon induces its ranking by all/some/none membership of each source's formulas in the set.
+\end{lemma}
+\begin{proof}
+A maxcon is maximal consistent in the full formula union. Any valuation satisfying it can therefore satisfy no additional input formula, so realizes it as a truth set. If a valuation dominates a truth set, its truth set restricted to the first differing prefix is a consistent strict extension of the original restriction. Conversely, if a truth set fails maximality on some prefix, a valuation of a consistent strict extension contains the old restriction and adds at least one formula in that prefix. The first difference then gives dominance. These two observations prove the first assertion. Each formula in a maxcon is individually consistent with it, while maximality in the full formula union ensures every excluded formula is individually inconsistent with it. This proves the second assertion.
+\end{proof}
+
+There is at least one maxcon for each ranking, since we may choose an inclusion-maximal consistent set in the first block and then extend it maximally at each successive prefix. Alternatively, the strict dominance order on the attainable truth sets is finite. From a valuation, the all/some/none membership ranking $I(v)$ is computable in polynomial time. It equals the source-induced ranking when $A(v)$ is a maxcon. Thus $T$ is strongly stable exactly when every valuation with $I(v)\ne T$ has a dominating valuation. Guessing $T$ gives the predicate
+\[
+  \exists T\ \forall v\ \exists w\;[\, T\text{ is a valid tripartition and }
+                  (I(v)=T\text{ or }w\text{ dominates }v)\,].
+\]
+All tests are polynomial time in the explicit input. This places existence in $\Sigma_3^P$.
+
+\section{Reduction from three-block quantified satisfiability}
+Start with a quantified Boolean formula $\exists x\,\forall y\,\exists z\,\varphi(x,y,z)$, the standard $\Sigma_3^P$-complete problem \cite{stockmeyer}. Add a bit $s$ to the first block and a bit $t$ to the universal block, replacing the matrix by $\Phi=\varphi\vee(s\wedge t)$. The old and padded sentences are equivalent: a solution to the old sentence works with $s=0$, while any solution to the new one must solve the original for $t=0$. The padded propositional matrix is satisfiable somewhere, because $s=t=1$ suffices. In the reduction below, $x,y$ denote the padded variable blocks.
+
+Introduce two further mode bits for the four modes $\Good,\Bad_0,\Bad_1,\Repair$. Let $V=(\mode\ne\Repair)\vee\Phi$. The sources are
+\[
+ \{X_i^0\},\ \{X_i^1\}\ (i\in x),\qquad
+ \{Y_j^0,Y_j^1\}\ (j\in y),\qquad
+ \{A,A',C\},\qquad\{B_0,B_1\}.
+\]
+Here $X_i^b=V\wedge(x_i=b)$, $Y_j^b=V\wedge(y_j=b)$, $A$ holds in either Bad mode or in a valid Repair, $A'$ holds only in Good, $C$ holds only in a valid Repair, and $B_b$ holds only in $\Bad_b$. Mode tests are constant-size Boolean formulas and validity of Repair means $\Phi$ holds. Fresh, distinct tautological conjuncts may be appended to distinguish all formula labels syntactically. The output has polynomial length. Each input formula is satisfiable: the $X,Y$ labels can use Good, the Bad modes realize $A,B_0,B_1$, and the padding permits $C$ in a Repair.
+
+For an assignment pair $x,y$, let $D(x,y)$ contain the matching $X$ and $Y$ labels. The nonempty attainable truth sets are exactly the following.
+\[
+\begin{array}{c|l|l}
+ \text{mode}&\text{truth set}&\text{availability}\\ \hline
+ \Good & D(x,y)\cup\{A'\} & \text{always}\\
+ \Bad_b & D(x,y)\cup\{A,B_b\} & \text{always, for }b=0,1\\
+ \Repair & D(x,y)\cup\{A,C\} & \exists z\,\Phi(x,y,z)
+\end{array}
+\]
+An invalid Repair gives the empty truth set, which every nonempty truth set dominates under any ranking. Distinct nonempty truth sets are incomparable by inclusion in the full formula union. A different $x$ or $y$ selects an incompatible label, and at a fixed assignment the mode markers prevent a strict inclusion. The ranking can still compare these truth sets at earlier prefixes.
+
+For each $x$ define $T_x$ as follows. The R class contains the selected $X$ singletons. The P class contains the $Y$ sources and the arm source $\{A,A',C\}$. The U class contains the other $X$ singletons and the dummy source $\{B_0,B_1\}$. The Good and Repair truth sets induce $T_x$. Each Bad induces $T'_x$, obtained from $T_x$ by moving the dummy from U to P. There are no other possible strongly stable rankings, since each such ranking has a maxcon and must be induced by it.
+
+\subsection{Comparing the candidate rankings}
+For $T_x$ or $T'_x$ the first block contains all and only the selected $X$ labels. Any truth set with a different outer assignment has a proper subset there and is dominated by a matching Good. Among the truth sets for $x$, different $y$ assignments are incomparable in the second block because their selected $Y$ labels conflict. We can therefore analyze each fixed $y$ separately.
+
+For $T_x$ the Good mode's marker $A'$ makes it incomparable with the other modes. The two Bad modes tie through the P block, and in U each has its own distinct $B_b$. If a Repair exists, it has $A,C$ in P against the Bads' $A$ alone. This strictly dominates both Bads at that block, regardless of their dummy markers in U. If no Repair exists, both Bads are undominated. It follows that every maxcon of $T_x$ induces $T_x$ exactly when every $y$ has a Repair. For $T'_x$ any matching Good remains undominated. Against a different $y$, its universal labels are incomparable; at its own $y$ the unique $A'$ prevents dominance by any alternative mode. Its induced ranking is $T_x\ne T'_x$, so $T'_x$ is never strongly stable.
+
+Consequently the constructed sources have a strongly stable tripartition exactly when the original quantified sentence is true. Both $T_x$ and $T'_x$ have nonempty first and third classes because of the selected and unselected outer singleton for $s$. The arm guarantees nonempty P. This proves the hardness and completes Theorem~\ref{thm:main}.
+
+\newpage
+\section{Worked example and companion problem}
+Take the unpadded matrix $\varphi(x,y,z)=(x\wedge z)\vee\neg y$, with one bit in each block. In the padded instance fix the outer padding bit to $s=0$, so that either universal padding bit $t$ gives the same row of the following table.
+\[
+\begin{array}{c|cc|l}
+ x& y=0&y=1&\text{candidate }T_{(x,0)}\\ \hline
+ 0&\text{Repair exists}&\text{No Repair}&\text{Fails strong stability}\\
+ 1&\text{Repair exists}&\text{Repair exists}&\text{Strongly stable}
+\end{array}
+\]
+When $x=y=1$, choosing $z=1$ supplies the Repair. Its P-block arm labels are $\{A,C\}$, strictly containing the Bads' $\{A\}$. The Good arm label $\{A'\}$ remains incomparable, and both surviving types induce the same ranking. The worked explorer shows these three Boolean arm coordinates for a fixed $x,y$.
+
+Liberatore also asks about skeptical consequence from maxcons of stable rankings. The companion record for Q622 uses this same base construction, with an additional query argument that accounts for the chosen convention on the empty family and a separate existence-promise variant. This article concerns Q621, the existence decision problem. \href{https://doi.org/10.5281/zenodo.24572374}{Companion record.}
+
+\section*{AI assistance}
+ChatGPT Astra 6.2 (OpenAI) generated the recovered proof and its original replay under human direction. OpenAI Codex independently reviewed the mathematics and prepared the release replay. GPT-6.2 Sol (OpenAI) checked primary sources and prepared this manuscript and illustration. DannyExperiments is the project citation identity.
+
+\bibliographystyle{amsplain}
+\bibliography{references}
+\end{document}

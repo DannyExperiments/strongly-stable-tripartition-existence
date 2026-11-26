@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repair and stability</title>
+<style>
+:root{color-scheme:dark;--bg:#121a2b;--panel:#202f48;--text:#f5f8ff;--muted:#c7d8f0;--good:#b8b1ff;--bad:#ffbf78;--repair:#69edc3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:clamp(16px,3.6vw,18px)/1.45 system-ui,sans-serif}
+main{max-width:49rem;margin:auto;padding:clamp(.8rem,4vw,2rem)}h1,p{margin:0 0 .65rem}h1{font-size:clamp(2rem,7vw,3.3rem);line-height:1.06}.intro,details{color:var(--muted)}
+.controls,.set,.angle{display:flex;flex-wrap:wrap;gap:.45rem .7rem;align-items:center;margin:.66rem 0}.set{margin:0}button{font:inherit;font-weight:650;color:var(--text);border:1px solid #8b9cc0;border-radius:.56rem;background:var(--panel);padding:.42rem .7rem;cursor:pointer}button[aria-pressed=true]{color:var(--bg);background:var(--repair);border-color:var(--repair)}
+canvas{display:block;width:100%;height:auto;background:var(--panel);border-radius:.82rem;touch-action:pan-y;cursor:grab}canvas:active{cursor:grabbing}
+input{min-width:7rem;flex:1;accent-color:var(--repair)}#overall{font-weight:700}
+table{width:100%;border-collapse:collapse;margin:.55rem 0;font-variant-numeric:tabular-nums}th,td{padding:.35rem .3rem;border-bottom:1px solid #536687;text-align:left}
+details{border-top:1px solid #536687;padding-top:.64rem;margin-top:.75rem}summary{cursor:pointer}
+</style>
+<main>
+<h1>Repair and stability</h1>
+<p class="intro">Choose an outer bit x and a universal challenge y for the matrix (x ∧ z) ∨ ¬y. A Repair mode exists when some z makes it true.</p>
+<div class="controls">
+<div class="set" id="outer" role="group" aria-label="Outer choice x"><button type="button">x = 0</button><button type="button">x = 1</button></div>
+<div class="set" id="universal" role="group" aria-label="Universal challenge y"><button type="button">y = 0</button><button type="button">y = 1</button></div>
+</div>
+<canvas id="cube" width="700" height="436" role="img" aria-label="Cube of arm-label presence A, A prime and C. Good and the two Bad modes occupy different points. The exact sets and outcomes are in the table."></canvas>
+<label for="angle" class="angle">Rotate cube <input id="angle" type="range" min="15" max="50" value="25" aria-label="Rotation angle in degrees"></label>
+<div aria-live="polite">
+<p id="witness">No repair witness for y = 1.</p>
+<table aria-label="Maximal truth-set modes at the selected challenge">
+<thead><tr><th scope="col">Mode</th><th scope="col">Arm formulas</th><th scope="col">Outcome</th></tr></thead>
+<tbody>
+<tr><th scope="row">Good</th><td>{A′}</td><td>Maximal</td></tr>
+<tr><th scope="row">Bad0, Bad1</th><td>{A}</td><td id="bad-status">Maximal</td></tr>
+<tr><th scope="row">Repair</th><td>{A, C}</td><td id="repair-status">Unavailable</td></tr>
+</tbody></table>
+<p id="overall">x = 0 fails strong stability: y = 1 has no repair.</p>
+</div>
+<details><summary>How the cube compares modes</summary>
+<p>A vertex records which of the arm formulas A, A′ and C is present in the middle priority block. The Bad modes differ only in the last block, so they share a point. When Repair exists, it adds C to the middle block and dominates both. Good contains A′ and stays incomparable. Good and Repair induce the same tripartition.</p>
+<p>Drag horizontally or move the rotation slider. The padding bit s is fixed to zero in this example, so its paired universal bit t has no effect.</p>
+</details>
+</main>
+<script>
+"use strict";
+const canvas=document.getElementById("cube"), ctx=canvas.getContext("2d");
+const angle=document.getElementById("angle");
+const groups=["outer","universal"].map(id=>Array.from(document.querySelectorAll("#"+id+" button")));
+let x=0,y=1,drag=null;
+const vertices=[];
+for(const a of [0,1])for(const b of [0,1])for(const c of [0,1])vertices.push([a,b,c]);
+const witness=(a,b)=>[0,1].find(z=>Boolean((a&&z)||!b));
+function project(point){
+ const [a,b,c]=point.map(q=>2*q-1), rad=Number(angle.value)*Math.PI/180;
+ const u=Math.cos(rad),v=Math.sin(rad);
+ return [350+132*(u*a-v*b),218+63*(v*a+u*b)-89*c];
+}
+function segment(a,b,color,width){
+ ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();
+}
+function marker(point,label,colour,offset,square=false){
+ const [a,b]=point;
+ ctx.fillStyle=colour;
+ if(square)ctx.fillRect(a-9,b-9,18,18);
+ else{ctx.beginPath();ctx.arc(a,b,10,0,2*Math.PI);ctx.fill();}
+ ctx.font="bold 32px system-ui";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(label,a,b+offset);
+}
+function render(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ for(const [i,a] of vertices.entries())for(const b of vertices.slice(i+1)){
+  if(a.reduce((sum,value,j)=>sum+Math.abs(value-b[j]),0)===1)segment(project(a),project(b),"#536687",3);
+ }
+ const good=project([0,1,0]),bad=project([1,0,0]),repair=project([1,0,1]);
+ marker(good,"Good", "#b8b1ff",37);
+ const available=witness(x,y)!==undefined;
+ if(available){
+  const [a,b]=repair;
+  segment(bad,[a,b+18],"#69edc3",7);
+  ctx.beginPath();ctx.moveTo(a,b+6);ctx.lineTo(a-12,b+29);ctx.lineTo(a+12,b+29);
+  ctx.closePath();ctx.fillStyle="#69edc3";ctx.fill();
+  marker(repair,"Repair","#69edc3",-29);
+ }
+ marker(bad,"Bad0, Bad1",available?"#c7d8f0":"#ffbf78",36,true);
+}
+function update(){
+ groups.forEach((list,i)=>list.forEach((button,j)=>button.setAttribute("aria-pressed",String(j===(i===0?x:y)))));
+ const z=witness(x,y),available=z!==undefined;
+ document.getElementById("witness").textContent=available?"Repair witness z = "+z+" for y = "+y+".":"No repair witness for y = "+y+".";
+ document.getElementById("bad-status").textContent=available?"Dominated":"Maximal";
+ document.getElementById("repair-status").textContent=available?"Maximal":"Unavailable";
+ const failing=[0,1].find(b=>witness(x,b)===undefined);
+ document.getElementById("overall").textContent=failing===undefined?"x = "+x+" yields a strongly stable tripartition.":"x = "+x+" fails strong stability: y = "+failing+" has no repair.";
+ render();
+}
+groups.forEach((list,i)=>list.forEach((button,j)=>button.addEventListener("click",()=>{if(i===0)x=j;else y=j;update();})));
+angle.addEventListener("input",render);
+canvas.addEventListener("pointerdown",e=>{drag=[e.clientX,Number(angle.value)];canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener("pointermove",e=>{if(!drag)return;angle.value=String(Math.max(15,Math.min(50,drag[1]+.45*(e.clientX-drag[0]))));render();});
+for(const e of ["pointerup","pointercancel","lostpointercapture"])canvas.addEventListener(e,()=>{drag=null;});
+update();
+</script>
+</html>

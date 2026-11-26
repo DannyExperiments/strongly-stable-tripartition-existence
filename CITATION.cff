@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "Cite this version of the research release."
+type: software
+title: "The complexity of strongly stable source tripartition existence"
+authors:
+  - name: "DannyExperiments"
+version: "1.0.0"
+date-released: 2026-11-27
+doi: "10.5281/zenodo.24572371"
+url: "https://doi.org/10.5281/zenodo.24572371"
+repository-code: "https://github.com/DannyExperiments/strongly-stable-tripartition-existence"
+keywords:
+  - "belief merging"
+  - "source reliability"
+  - "strongly stable tripartition"
+  - "maximal consistent subsets"
+  - "propositional logic"
+  - "polynomial hierarchy"
+  - "quantified Boolean formulas"
+preferred-citation:
+  type: software
+  title: "The complexity of strongly stable source tripartition existence"
+  authors:
+    - name: "DannyExperiments"
+  version: "1.0.0"
+  date-released: 2026-11-27
+  doi: "10.5281/zenodo.24572371"
+  url: "https://doi.org/10.5281/zenodo.24572371"
+  repository-code: "https://github.com/DannyExperiments/strongly-stable-tripartition-existence"
